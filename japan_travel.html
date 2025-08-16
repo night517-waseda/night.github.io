@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们的日本旅行计划</title>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --tertiary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --quaternary-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --bg-color: #f8fafc;
+            --text-color: #2d3748;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/><circle cx="20" cy="30" r="1" fill="white" opacity="0.2"/><circle cx="80" cy="20" r="1.5" fill="white" opacity="0.15"/><circle cx="30" cy="80" r="1" fill="white" opacity="0.1"/><circle cx="70" cy="70" r="2" fill="white" opacity="0.1"/></svg>') repeat;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .location-section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .location-section:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .location-header {
+            padding: 30px 40px;
+            font-size: 2.2em;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .location-header.kyoto {
+            background: var(--secondary-gradient);
+        }
+
+        .location-header.kamakura {
+            background: var(--tertiary-gradient);
+        }
+
+        .location-header.fuji {
+            background: var(--quaternary-gradient);
+        }
+
+        .location-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.8s;
+        }
+
+        .location-section:hover .location-header::before {
+            left: 100%;
+        }
+
+        .day-accordion {
+            background: white;
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .day-accordion:hover {
+            background: #f7fafc;
+        }
+
+        .day-accordion:first-child {
+            border-top: none;
+        }
+
+        .day-header {
+            padding: 25px 40px;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .day-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            transform-origin: bottom;
+        }
+
+        .day-accordion:hover .day-header::before,
+        .day-accordion.active .day-header::before {
+            transform: scaleY(1);
+        }
+
+        .day-header .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .day-accordion.active .icon {
+            transform: rotate(135deg);
+            background: var(--secondary-gradient);
+        }
+
+        .day-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(145deg, #f8fafc 0%, #ffffff 100%);
+        }
+
+        .day-content-inner {
+            padding: 30px 40px;
+        }
+
+        .timeline {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 120px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #e2e8f0, #cbd5e0, #e2e8f0);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 30px;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideInTimeline 0.6s ease forwards;
+        }
+
+        .timeline-item:nth-child(2) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(5) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(6) { animation-delay: 0.5s; }
+        .timeline-item:nth-child(7) { animation-delay: 0.6s; }
+        .timeline-item:nth-child(8) { animation-delay: 0.7s; }
+        .timeline-item:nth-child(9) { animation-delay: 0.8s; }
+
+        @keyframes slideInTimeline {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 112px;
+            top: 8px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #667eea;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            background: #667eea;
+            transform: scale(1.2);
+            box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.1);
+        }
+
+        .timeline-time {
+            flex: 0 0 100px;
+            font-weight: 700;
+            color: #667eea;
+            font-size: 0.95em;
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .timeline-details {
+            flex: 1;
+            padding-left: 40px;
+        }
+
+        .timeline-title {
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        .timeline-title a {
+            color: #667eea;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .timeline-title a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: var(--secondary-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .timeline-title a:hover::after {
+            width: 100%;
+        }
+
+        .timeline-notes {
+            font-size: 0.95em;
+            color: #64748b;
+            margin: 0 0 15px 0;
+            line-height: 1.6;
+        }
+
+        .timeline-notes a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .timeline-notes a:hover {
+            text-decoration: underline;
+        }
+
+        /* 景点图片样式 */
+        .attraction-image {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 10px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .attraction-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 图片模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: relative;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .modal img {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .play-note {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            border: 1px solid #c8e6c9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 12px;
+            font-size: 0.9em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-note::before {
+            content: '💡';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.2em;
+            opacity: 0.6;
+        }
+
+        .play-note strong {
+            color: #2e7d32;
+            font-weight: 700;
+        }
+
+        .info-note {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: none;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 12px;
+            font-size: 0.95em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-note::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1));
+            transform: translateX(100px);
+            transition: transform 0.6s ease;
+        }
+
+        .info-note:hover::before {
+            transform: translateX(-100px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            header {
+                padding: 40px 20px;
+                border-radius: 15px;
+            }
+
+            header h1 {
+                font-size: 2.2em;
+            }
+
+            .location-header {
+                padding: 20px 25px;
+                font-size: 1.8em;
+            }
+
+            .day-header {
+                padding: 20px 25px;
+                font-size: 1.2em;
+            }
+
+            .day-content-inner {
+                padding: 20px 25px;
+            }
+
+            .timeline::before {
+                left: 90px;
+            }
+
+            .timeline-item::before {
+                left: 82px;
+            }
+
+            .timeline-time {
+                flex: 0 0 80px;
+                font-size: 0.85em;
+            }
+
+            .timeline-details {
+                padding-left: 30px;
+            }
+
+            .attraction-image {
+                max-width: 100%;
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .location-header {
+                font-size: 1.5em;
+            }
+
+            .timeline {
+                padding-left: 0;
+            }
+
+            .timeline::before {
+                display: none;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                margin-bottom: 25px;
+            }
+
+            .timeline-item::before {
+                display: none;
+            }
+
+            .timeline-time {
+                flex: none;
+                margin-bottom: 8px;
+                width: fit-content;
+            }
+
+            .timeline-details {
+                padding-left: 0;
+            }
+
+            .attraction-image {
+                height: 120px;
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- 图片模态框 -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="">
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🗾 我们的日本旅行计划</h1>
+        </header>
+
+        <section class="location-section fade-in">
+            <div class="location-header kyoto">🏯 京都</div>
+
+            <div class="day-accordion">
+                <div class="day-header">
+                    第一天: 岚山 & 祇园 
+                    <span class="icon">+</span>
+                </div>
+                <div class="day-content">
+                    <div class="day-content-inner">
+                        <ul class="timeline">
+                            <li class="timeline-item">
+                                <div class="timeline-time">08:30 - 09:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title">一起出发去岚山</p>
+                                    <p class="timeline-notes">交通：从<a href="https://www.google.com/maps/search/?api=1&query=京都站" target="_blank">京都站</a>乘坐JR嵯峨野线到 <b>JR马堀站</b> (约25分钟)。</p>
+                                    <div class="play-note"><strong>备注：</strong>这是去乘坐小火车的方便路线，出站后跟着指示牌走10分钟左右就可以到达小火车龟冈站。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">09:30 - 10:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=嵯峨野观光铁道" target="_blank">乘坐浪漫的嵯峨野小火车</a></p>
+                                    <img src="https://www.sagano-kanko.co.jp/sc/wp-content/themes/saganokanko/assets/img/top_about_img.webp" alt="嵯峨野小火车" class="attraction-image" onclick="openModal(this.src, '嵯峨野小火车 - 穿越美丽山谷的观光列车')">
+                                    <p class="timeline-notes">路线：从小火车龟冈站到小火车岚山站。</p>
+                                    <div class="play-note"><strong>备注：</strong>提前在网上或JR车站买好票，尽量选右侧座位，风景会更好看。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">10:00 - 11:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=岚山竹林小径" target="_blank">漫步岚山竹林</a></p>
+                                    <img src="https://www.japan-travel.cn/images/kyoto/Kyoto1112_3/Kyoto1112_3_670x450.jpg" alt="岚山竹林" class="attraction-image" onclick="openModal(this.src, '岚山竹林小径 - 翠绿竹海中的诗意步道')">
+                                    <div class="play-note"><strong>备注：</strong>从小火车岚山站出来就是竹林的上游入口，很方便。这个时候的光线刚好，拍照特别美。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">11:00 - 12:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=天龙寺" target="_blank">天龙寺</a></p>
+                                    <img src="https://www.jyuzujyunrei.com/w57p8xhk/wp-content/uploads/2021/03/tenryuji_sogenchi_autumn-640x427.jpg" alt="天龙寺" class="attraction-image" onclick="openModal(this.src, '天龙寺 - 京都著名禅宗寺庙的枯山水庭园')">
+                                    <div class="play-note"><strong>备注：</strong>穿过竹林小径就能到天龙寺的北门，可以直接进去参观漂亮的曹源池庭园，路线非常顺畅。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">12:00 - 13:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title">午餐时间</p>
+                                    <div class="play-note"><strong>备注：</strong>从天龙寺正门出来就是岚山最热闹的商店街，我们可以在这里解决午饭。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">13:00 - 14:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=渡月桥" target="_blank">渡月桥</a></p>
+                                    <img src="https://www.nippon.com/cn/ncommon/contents/guide-to-japan/2713429/2713429.jpg" alt="渡月桥" class="attraction-image" onclick="openModal(this.src, '渡月桥 - 岚山标志性的美丽木桥')">
+                                    <div class="play-note"><strong>备注：</strong>岚山的地标，吃完饭在桥上和河边散散步，吹吹风，特别舒服。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">14:00 - 15:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title">逛逛岚山商店街</p>
+                                 <img src="https://www.bring-you.info/imgs/2019/01/sagano_arashiyama-travel-14.jpg" alt="岚山商店街" class="attraction-image" onclick="openModal(this.src, '岚山商店街')">
+                                    <div class="play-note"><strong>备注：</strong>可以逛逛主干道上的各种小店，买一些喜欢的伴手礼。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">15:00 - 15:45</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title">从岚山前往祇园</p>
+                                    <p class="timeline-notes">交通：从JR嵯峨岚山站坐车返回京都站，再换乘巴士或地铁到祇园四条。</p>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">16:00 – 17:30</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=祇园白川" target="_blank">祇园白川</a> & <a href="https://www.google.com/maps/search/?api=1&query=花见小路" target="_blank">花见小路</a></p>
+                                    <img src="https://mediaim.expedia.com/destination/2/268c2c627dd840dc0a8dd1a7bc53a069.jpg" alt="祇园白川" class="attraction-image" onclick="openModal(this.src, '祇园白川 - 京都最美的传统街区')">
+ <img src="https://monthly48.com/storage/article/664/lmG7TnvL1BmBOHaNlJ2gmolndyuuYQrZ95KKWIUA.jpeg" alt="花见小路" class="attraction-image" onclick="openModal(this.src, '花见小路')">
+                                    <div class="play-note"><strong>备注：</strong>傍晚时分是这里最美的时候，石板路、町屋、小桥流水，非常有韵味。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">晚上</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title">晚餐 & 自由活动</p>
+                                    <div class="play-note"><strong>备注：</strong>八坂神社晚上亮灯后非常壮观，而且免费进入。河原町是逛街和吃饭的好地方，可以逛到很晚。</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-accordion">
+                <div class="day-header">
+                    第二天
+                    <span class="icon">+</span>
+                </div>
+                <div class="day-content">
+                    <div class="day-content-inner">
+                        <ul class="timeline">
+                            <li class="timeline-item">
+                                <div class="timeline-time">09:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=清水寺" target="_blank">清水寺</a></p>
+                                    <img src="https://image.walkerplus.com/wpimg/walkertouch/wtd/event/39/n/13139_2.jpg?x=1920&notupsize=1" alt="清水寺" class="attraction-image" onclick="openModal(this.src, '清水寺 - 京都最著名的木造寺庙')">
+                                    <div class="play-note"><strong>备注：</strong>从清水舞台可以眺望京都市景。寺里的音羽瀑布有三股泉水，分别代表学业、恋爱、长寿，我们可以排队喝一喝，据说很灵验。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">10:30 – 12:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=二年坂三年坂" target="_blank">二年坂 & 三年坂</a></p>
+                                    <img src="https://www.bring-you.info/imgs/2016/05/sannenzaka-ninenzaka-streets2023-3.jpg" alt="二年坂三年坂" class="attraction-image" onclick="openModal(this.src, '二年坂三年坂 - 保存完好的传统石坂街道')">
+                                    <div class="play-note"><strong>备注：</strong>这两条石板坡道很有京都风情，两旁都是小店和茶屋。你要是想可以租和服拍照，氛围感十足。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">13:30 – 14:30</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=法观寺八坂之塔" target="_blank">八坂塔（法观寺）</a></p>
+                                    <img src="https://mediaim.expedia.com/destination/1/3bc76a96d16aed5e1f00c3a30a815b11.jpg" alt="八坂塔" class="attraction-image" onclick="openModal(this.src, '八坂塔 - 东山地区的标志性五重塔')">
+                                    <div class="play-note"><strong>备注：</strong>这是东山地区的标志性建筑。从下往上拍塔的全景，很有古都的感觉。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">14:30 – 16:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=南禅寺" target="_blank">南禅寺</a> & <a href="https://www.google.com/maps/search/?api=1&query=蹴上インクライン" target="_blank">蹴上倾斜铁道</a></p>
+                                    <img src="https://www.japankuru.com/gld-kanri/data/uploads/2024/07/DSC_6069-1.jpg" alt="南禅寺" class="attraction-image" onclick="openModal(this.src, '南禅寺 - 禅宗寺院与著名的水路阁')">
+                                    <div class="play-note"><strong>备注：</strong>南禅寺的三门非常宏伟。寺里的水路阁，是一个红砖砌成的水道桥，拍照很出片。旁边的倾斜铁道是废弃的，在铁轨上散步感觉很特别。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">16:30 – 19:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=京都站" target="_blank">京都站</a> → <a href="https://www.google.com/maps/search/?api=1&query=东京站" target="_blank">东京站</a></p>
+                                    <div class="play-note"><strong>备注：</strong>新干线。</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-note">
+                <b>后续行程小建议：</b><br>
+                我们可以选择住在东京或者镰仓。从东京去镰仓大概需要1.5小时。如果第二天要去河口湖，需要从新宿出发。镰仓可以去河口湖，比较省时间了，但住在东京的好处是如果天气有变，我们可以更灵活地调整其他安排。镰仓和富士山的行程可以根据天气情况互换。
+            </div>
+        </section>
+
+        <section class="location-section fade-in">
+            <div class="location-header kamakura">🏖️ 镰仓</div>
+            
+            <div class="day-accordion">
+                <div class="day-header">
+                    第三天
+                    <span class="icon">+</span>
+                </div>
+                <div class="day-content">
+                    <div class="day-content-inner">
+                        <ul class="timeline">
+                            <li class="timeline-item">
+                                <div class="timeline-time">09:30</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=长谷寺镰仓" target="_blank">长谷寺</a></p>
+                                    <img src="https://www.hasedera.jp/common/img/img_visual01b.jpg" alt="长谷寺" class="attraction-image" onclick="openModal(this.src, '长谷寺 - 镰仓著名的花之寺')">
+                                  <img src="https://kamakuraguide.com/wp-content/uploads/2025/01/pixta_94470414_S-640x274.jpg" alt="长谷寺" class="attraction-image" onclick="openModal(this.src, '长谷寺 - 镰仓著名的花之寺')">                                    <div class="play-note"><strong>备注：</strong>长谷寺被称为"花之寺"，每个季节都有不同的花。寺里的观景台可以俯瞰镰仓海景和街景，视野特别好。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">~</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=镰仓大佛" target="_blank">镰仓大佛</a></p>
+                                    <img src="https://www.trip-kamakura.com/uploaded/image/16327.jpg" alt="镰仓大佛" class="attraction-image" onclick="openModal(this.src, '镰仓大佛 - 日本第二大青铜佛像')">
+                                    <div class="play-note"><strong>备注：</strong>镰仓的象征。花一点点钱可以进去大佛内部参观，感受一下它的内部结构。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">12:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=小町通り" target="_blank">小町通</a> & 午餐</p>
+                                    <img src="https://s3-ap-northeast-1.amazonaws.com/thegate/2022/12/22/16/29/17/pixta_79365944_M.jpg" alt="小町通" class="attraction-image" onclick="openModal(this.src, '小町通 - 镰仓最热闹的商业街')">
+                                    <div class="play-note"><strong>备注：</strong>一条非常热闹的商业街，从镰仓站一直通到鹤冈八幡宫。我们可以边走边吃，尝尝当地的各种小吃。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">13:30</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=七里之滨" target="_blank">七里滨</a></p>
+                                    <img src="https://s3-ap-northeast-1.amazonaws.com/thegate/2020/03/19/15/42/31/Enoden.jpg" alt="七里滨" class="attraction-image" onclick="openModal(this.src, '七里滨 - 镰仓美丽的海岸线')">
+                                    <img src="https://cdn-mapple.net/g/v3/?u=https://www.mapple.net/cms/wp-content/uploads/2018/06/94-6-1-640x427.jpg" alt="七里滨" class="attraction-image" onclick="openModal(this.src, '七里滨 - 镰仓美丽的海岸线')">
+                                    <div class="play-note"><strong>备注：</strong>天气好的时候，从这里可以看到江之岛和远处的富士山。</div>
+                                </div>
+</li>
+<li class="timeline-item">
+    <div class="timeline-time">~</div>
+    <div class="timeline-details">
+        <p class="timeline-title">
+            <a href="https://www.google.com/maps/search/?api=1&query=江之岛" target="_blank">江之岛</a>
+        </p>       
+        <img src="https://trip.pref.kanagawa.jp/img/spots/photos/hero/VsBMTtaJujSXdV8fd8ACkXDUIzttY304hCu1EUL9-1920x1080.jpg" 
+             alt="江之岛" class="attraction-image" 
+             onclick="openModal(this.src, '江之岛 - 湘南海岸的美丽小岛')">
+
+        <img src="https://enokama.jp/assets/common/lang/img/corse03_6.jpg" 
+             alt="江之岛" class="attraction-image" 
+             onclick="openModal(this.src, '江之岛 - 湘南海岸的美丽小岛')">
+
+        <img src="https://enokama.jp/assets/common/lang/img/corse03_8.jpg" 
+             alt="江之岛" class="attraction-image" 
+             onclick="openModal(this.src, '江之岛 - 湘南海岸的美丽小岛')">
+
+        <div class="play-note">
+            <strong>备注：</strong>江之岛的夕阳非常有名，尤其是“稚儿之渊”是观赏夕阳的最佳地点。在夕阳西下时，许多人会聚集在这里，欣赏美丽的落日景色，天气好时，还能看到富士山和夕阳同框的景象，非常壮观。
+        </div>
+    </div>
+</li>
+
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">16:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=江之岛シーキャンドル" target="_blank">江之岛观景台</a> / 看夕阳</p>
+                                    <img src="https://enokama.jp/assets/common/lang/img/corse03_10.jpg" alt="江之岛夕阳" class="attraction-image" onclick="openModal(this.src, '江之岛夕阳 - 湘南海岸最美的日落景色')">
+                                    <div class="play-note"><strong>备注：</strong>这里是看日落的绝佳地点。</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="location-section fade-in">
+            <div class="location-header fuji">🗻 富士山</div>
+            
+            <div class="day-accordion">
+                <div class="day-header">
+                    第四天
+                    <span class="icon">+</span>
+                </div>
+                <div class="day-content">
+                    <div class="day-content-inner">
+                        <ul class="timeline">
+                            <li class="timeline-item">
+                                <div class="timeline-time">09:00 – 10:30</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=富士山パノラマロープウェイ" target="_blank">天上山公园 (缆车+展望台)</a></p>
+                                    <img src="https://svcstrg.cld.navitime.jp/imgfile/02301_1300801n_01.jpg" alt="富士山缆车" class="attraction-image" onclick="openModal(this.src, '天上山公园 - 河口湖畔的富士山观景缆车')">
+                                    <img src="https://www.hokkaidolibrary.com/img/upload/Japan/KANTO/303a.jpg" alt="富士山缆车" class="attraction-image" onclick="openModal(this.src, '天上山公园 - 河口湖畔的富士山观景缆车')">
+                                    <div class="play-note"><strong>备注：</strong>缆车的景色很好看。山顶的"天上的钟"是情侣必打卡的地方，据说敲响钟声就能得到保佑。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">10:40 – 12:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=大石公园" target="_blank">大石公园</a></p>
+                                    <img src="https://ppap.kinto-jp.com/spots_images/700-images/139ebd9a-72ee-40d1-9744-a2ce1eff736b.jpg" alt="大石公园" class="attraction-image" onclick="openModal(this.src, '大石公园 - 河口湖畔欣赏富士山的绝佳位置')">
+<img src="https://cdn.zekkei-japan.jp/images/spots/e7eb66df81818d36a747b4333fdaee3f.jpg" alt="大石公园" class="attraction-image" onclick="openModal(this.src, '大石公园 - 河口湖畔欣赏富士山的绝佳位置')">
+
+                                    <div class="play-note"><strong>备注：</strong>河口湖畔观赏富士山的经典位置。夏天有薰衣草，秋天有扫帚草，不同季节有不同的花海，拍照超美。</div>
+                                </div>
+    </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">12:00 - 13:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title">午餐时间</p>
+                                    <div class="play-note"><strong>备注：</strong>大石公园有很多当地当地特色料理，我们可以在这里解决午饭。</div>
+                                </div>
+
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">13:45 – 14:30</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=日川時計店" target="_blank">日川时计店</a></p>
+                                    <img src="https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1280,h_820/w_79,x_14,y_14,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/m83y2llerh5vfkg4qohr/%E5%AF%8C%E5%A3%AB%E5%B1%B1%E6%97%A5%E5%B7%9D%E6%97%B6%E8%AE%A1%E5%BA%97+%E7%BD%97%E6%A3%AE%E6%B2%B3%E5%8F%A3%E6%B9%96%E7%AB%99%E5%89%8D%E5%BA%97+%E7%AE%B1%E6%A0%B9%E9%9B%95%E5%88%BB%E4%B9%8B%E6%A3%AE%E7%BE%8E%E6%9C%AF%E9%A6%86+%E6%A2%A6%E4%B9%8B%E5%A4%A7%E6%A1%A5%E4%B8%80%E6%97%A5%E6%B8%B8%EF%BD%9C%E4%B8%9C%E4%BA%AC%E5%87%BA%E5%8F%91.jpg" alt="日川时计店" class="attraction-image" onclick="openModal(this.src, '日川时计店 - 经典的富士山街拍地点')">
+                                    <div class="play-note"><strong>备注：</strong>这是一个很棒的拍照点，可以拍到日式街道延伸至富士山的经典照片。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">14:45</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title"><a href="https://www.google.com/maps/search/?api=1&query=忍野八海" target="_blank">忍野八海</a></p>
+                                    <img src="https://s3-ap-northeast-1.amazonaws.com/thegate/2021/02/12/17/05/19/Oshino-Hakkai.jpg" alt="忍野八海" class="attraction-image" onclick="openModal(this.src, '忍野八海 - 富士山下的清澈泉水群')">
+                                    <img src="https://www.glamping-fuji.com/wp-content/uploads/2021/03/oshinohakkai.jpg" alt="忍野八海" class="attraction-image" onclick="openModal(this.src, '忍野八海 - 富士山下的清澈泉水群')">
+                                    <img src="https://www.resort-glamping.com/wp-content/uploads/2024/08/oshino_rg.jpg" alt="忍野八海" class="attraction-image" onclick="openModal(this.src, '忍野八海 - 富士山下的清澈泉水群')">
+                                    <div class="play-note"><strong>备注：</strong>被誉为"日本的九寨沟"，池水清澈见底，可以看到远处的富士山倒影。我们可以尝尝当地的草饼和烤鱼。</div>
+                                </div>
+                            </li>
+                            <li class="timeline-item">
+                                <div class="timeline-time">17:00 – 19:00</div>
+                                <div class="timeline-details">
+                                    <p class="timeline-title">返回东京新宿</p>
+                                    <div class="play-note"><strong>备注：</strong>回程前可以在河口湖站买一些富士山限定的伴手礼。</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 手风琴功能
+        const accordions = document.querySelectorAll('.day-accordion');
+        accordions.forEach(accordion => {
+            const header = accordion.querySelector('.day-header');
+            header.addEventListener('click', () => {
+                const content = accordion.querySelector('.day-content');
+                
+                // 关闭其他打开的手风琴
+                accordions.forEach(otherAccordion => {
+                    if (otherAccordion !== accordion && otherAccordion.classList.contains('active')) {
+                        otherAccordion.classList.remove('active');
+                        otherAccordion.querySelector('.day-content').style.maxHeight = null;
+                    }
+                });
+                
+                accordion.classList.toggle('active');
+                
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+
+        // 图片模态框功能
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeBtn = document.getElementsByClassName('close')[0];
+
+        function openModal(src, alt) {
+            modal.style.display = 'block';
+            modalImg.src = src;
+            modalImg.alt = alt;
+        }
+
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // 观察所有带有 fade-in 类的元素 
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 页面加载完成后的初始动画
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
